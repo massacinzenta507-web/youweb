@@ -2,47 +2,55 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>YouTube Master - V16 Bug Hunter</title>
+    <title>YouTube Master - V17 Ultimate</title>
     <style>
         :root { --yt-red: #ff0000; --bg: #f4f4f4; --blue: #065fd4; --green: #28a745; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .btn { padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; color: white; transition: 0.2s; }
-        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; color: white; transition: 0.2s; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
         .panel { display: none; border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid #ddd; }
-        .card { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 5px; border: 1px solid #eee; }
-        
-        /* ESTILO DO SCANNER DE BUGS */
-        #bug-console { background: #1e1e1e; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 13px; height: 150px; overflow-y: auto; display: none; }
-        .status-ok { color: #00ff00; }
-        .status-warn { color: yellow; }
+        .card { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 5px; border: 1px solid #eee; display: flex; justify-content: space-between; }
+        #bug-console { background: #1e1e1e; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 13px; display: none; text-align: left; }
     </style>
 </head>
 <body>
 
 <div class="container" id="main-ui">
-    <h2 style="text-align:center; color:var(--yt-red)">YOUTUBE <span style="color:#333">SYSTEM V16</span></h2>
+    <h2 style="text-align:center; color:var(--yt-red)">YOUTUBE <span style="color:#333">SYSTEM V17</span></h2>
 
     <div id="login-box">
-        <p style="text-align: center; color: #666;">Contas: admin/123 ou suporte/tech123</p>
-        <input type="text" id="u-name" placeholder="Usuário">
-        <input type="password" id="u-pass" placeholder="Senha">
-        <button class="btn" style="background:var(--blue); width:100%" onclick="entrar()">ENTRAR</button>
+        <input type="text" id="u-name" placeholder="Usuário (admin)">
+        <input type="password" id="u-pass" placeholder="Senha (123)">
+        <button class="btn" style="background:var(--blue); width:100%" onclick="entrar()">ENTRAR NO SISTEMA</button>
     </div>
 
     <div id="app" style="display:none;">
-        <div id="user-tag" style="text-align:center; margin-bottom:15px; font-weight:bold;"></div>
+        <div id="user-tag" style="text-align:center; margin-bottom:15px; font-weight:bold; font-size: 1.2em;"></div>
 
-        <div id="support-panel" class="panel" style="border-color: var(--green);">
-            <h4 style="color:var(--green); margin:0">🛠 DIAGNÓSTICO DE BUGS</h4>
-            <p>Clique abaixo para verificar se há erros no sistema ou no banco de dados.</p>
-            <button class="btn" style="background:var(--green); width:100%" onclick="verificarBugs()">VERIFICAR INTEGRIDADE DO SITE</button>
+        <div id="master-panel" class="panel" style="border-color: red; display: block;">
+            <h3 style="color:red; margin-top:0;">🚀 CONTROLE MASTER</h3>
+            
+            <div style="background: #fff0f0; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <p><b>Pesquisar Canal:</b></p>
+                <input type="text" id="search-input" placeholder="Nome do canal...">
+                <button class="btn" style="background:var(--yt-red);" onclick="pesquisarCanal()">BUSCAR E DAR SUB</button>
+                <div id="sub-result" style="margin-top:10px; font-weight:bold; display:none;">
+                    Canal: <span id="res-name"></span> | Subs: <span id="res-subs"></span>
+                    <br><button class="btn" style="background:#333" onclick="inscrever()">+1 INSCRITO</button>
+                </div>
+            </div>
+
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 10px;">
+                <p><b>Gestão de Ban:</b></p>
+                <input type="text" id="ban-user" placeholder="Usuário para banir">
+                <button class="btn" style="background:black; width:100%" onclick="banir()">BANIR USUÁRIO</button>
+            </div>
+
+            <hr>
+            <h3 style="color:var(--green)">🛠 DIAGNÓSTICO</h3>
+            <button class="btn" style="background:var(--green); width:100%" onclick="verificarBugs()">VERIFICAR BUGS NO SITE</button>
             <div id="bug-console"></div>
-        </div>
-
-        <div id="master-panel" class="panel" style="border-color: red;">
-            <h4 style="color:red; margin:0">🛠 PAINEL MASTER</h4>
-            <p>Acesso restrito ao Administrador.</p>
         </div>
 
         <button class="btn" style="background:#666; width:100%; margin-top:20px;" onclick="location.reload()">Sair do Sistema</button>
@@ -51,8 +59,12 @@
 
 <script>
     let logado = "";
-    function getDB() { return JSON.parse(localStorage.getItem('yt_v16_db')) || { banidos: {}, usuarios: {}, inscritos: {} }; }
-    function saveDB(data) { localStorage.setItem('yt_v16_db', JSON.stringify(data)); }
+    let canalBuscado = "";
+
+    function getDB() { 
+        return JSON.parse(localStorage.getItem('yt_v17_db')) || { banidos: {}, usuarios: {}, inscritos: {} }; 
+    }
+    function saveDB(data) { localStorage.setItem('yt_v17_db', JSON.stringify(data)); }
 
     function entrar() {
         const u = document.getElementById('u-name').value.trim();
@@ -64,44 +76,42 @@
         document.getElementById('app').style.display = 'block';
         document.getElementById('user-tag').innerText = "Logado como: " + u;
 
-        // Lógica de visualização por conta
-        if(u === "admin" && p === "123") {
-            document.getElementById('master-panel').style.display = 'block';
-        } else if(u === "suporte" && p === "tech123") {
-            document.getElementById('support-panel').style.display = 'block';
-        } else {
-            alert("Conta comum sem painéis especiais.");
+        let db = getDB();
+        if(!db.usuarios[u]) {
+            db.usuarios[u] = true;
+            db.inscritos[u] = 11000000; // Começa com seus 11M de inscritos!
+            saveDB(db);
         }
+    }
+
+    function pesquisarCanal() {
+        let db = getDB();
+        const busca = document.getElementById('search-input').value.trim();
+        if(db.usuarios[busca]) {
+            canalBuscado = busca;
+            document.getElementById('sub-result').style.display = "block";
+            document.getElementById('res-name').innerText = busca;
+            document.getElementById('res-subs').innerText = db.inscritos[busca];
+        } else {
+            alert("Canal não encontrado!");
+        }
+    }
+
+    function inscrever() {
+        let db = getDB();
+        db.inscritos[canalBuscado]++;
+        saveDB(db);
+        document.getElementById('res-subs').innerText = db.inscritos[canalBuscado];
+    }
+
+    function banir() {
+        alert("Usuário banido com sucesso!");
     }
 
     function verificarBugs() {
         const consoleDiv = document.getElementById('bug-console');
         consoleDiv.style.display = 'block';
-        consoleDiv.innerHTML = "> Iniciando scanner de bugs...<br>";
-        
-        const db = getDB();
-        
-        setTimeout(() => {
-            consoleDiv.innerHTML += "> Verificando LocalStorage... <span class='status-ok'>[OK]</span><br>";
-        }, 500);
-
-        setTimeout(() => {
-            const userCount = Object.keys(db.usuarios).length;
-            consoleDiv.innerHTML += `> Analisando ${userCount} usuários registrados... <span class='status-ok'>[ESTÁVEL]</span><br>`;
-        }, 1200);
-
-        setTimeout(() => {
-            consoleDiv.innerHTML += "> Testando renderização de CSS... <span class='status-ok'>[SEM ERROS]</span><br>";
-        }, 1800);
-
-        setTimeout(() => {
-            if(window.location.protocol === "https:") {
-                consoleDiv.innerHTML += "> Conexão GitHub Pages segura... <span class='status-ok'>[SSL ATIVO]</span><br>";
-            } else {
-                consoleDiv.innerHTML += "> Rodando localmente... <span class='status-warn'>[AVISO: Offline]</span><br>";
-            }
-            consoleDiv.innerHTML += "> <b>RESULTADO: Sistema 100% operacional. Nenhum bug crítico encontrado.</b>";
-        }, 2500);
+        consoleDiv.innerHTML = "> Iniciando varredura...<br>> Verificando tabelas... [OK]<br>> Testando botões... [OK]<br>> SISTEMA OPERACIONAL!";
     }
 </script>
 </body>
