@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>YouTube Master - V14 Justice</title>
+    <style>
+        :root { --yt-red: #ff0000; --bg: #f4f4f4; --blue: #065fd4; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: white; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; text-align: center; padding: 20px; }
+        .btn { padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; color: white; transition: 0.2s; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        
+        .panel { display: none; border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid #ddd; }
+        .card { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 5px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; }
+        .badge { padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; text-transform: uppercase; color: white; }
+        .req-card { background: #fff8e1; border: 1px solid #ffe082; padding: 10px; border-radius: 8px; margin-top: 10px; color: #333; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div id="error-screen" class="overlay">
+    <h1 style="color:orange;">❌ ERRO DE CONEXÃO</h1>
+    <button class="btn" style="background:var(--blue)" onclick="mostrarBan()">Relatar ao Suporte</button>
+</div>
+
+<div id="ban-screen" class="overlay">
+    <h1 style="color:red;">⚠️ CONTA BLOQUEADA</h1>
+    <p>Motivo do Ban: <b id="view-motivo"></b></p>
+    <div style="background: #1a1a1a; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px;">
+        <h4>Solicitar Desbanimento</h4>
+        <select id="rev-motivo">
+            <option value="Fui banido injustamente">Fui banido injustamente</option>
+            <option value="Me arrependi do que fiz">Me arrependi do que fiz</option>
+            <option value="Minha conta foi hackeada">Minha conta foi hackeada</option>
+            <option value="Outro (Explicar abaixo)">Outro (Explicar abaixo)</option>
+        </select>
+        <textarea id="rev-msg" placeholder="Explique por que você deve voltar..."></textarea>
+        <button class="btn" style="background:var(--blue); width:100%" onclick="enviarPedido()">Enviar Pedido de Revisão</button>
+    </div>
+    <button class="btn" style="background:#444; margin-top:10px;" onclick="location.reload()">Sair</button>
+</div>
+
+<div class="container" id="main-ui">
+    <h2 style="text-align:center; color:var(--yt-red)">YOUTUBE <span style="color:#333">JUSTICE CONTROL</span></h2>
+
+    <div id="login-box">
+        <input type="text" id="u-name" placeholder="Usuário">
+        <input type="password" id="u-pass" placeholder="Senha">
+        <button class="btn" style="background:var(--blue); width:100%" onclick="entrar()">ACESSAR</button>
+    </div>
+
+    <div id="app" style="display:none;">
+        <div id="user-tag" style="text-align:center; margin-bottom:15px; font-weight:bold;"></div>
+
+        <div id="master-panel" class="panel" style="border-color: red;">
+            <h4 style="color:red; margin:0">🛠 PAINEL MASTER</h4>
+            <input type="text" id="ban-user" placeholder="Nome para banir">
+            <input type="text" id="ban-reason" placeholder="Motivo">
+            <button class="btn" style="background:red; width:100%" onclick="banir()">BANIR AGORA</button>
+            
+            <hr>
+            <h4 style="color:#f57c00;">⚖️ PEDIDOS DE DESBANIMENTO</h4>
+            <div id="list-pedidos"></div>
+            
+            <hr>
+            <strong>Lista de Banidos:</strong>
+            <div id="banned-list"></div>
+        </div>
+
+        <div id="logs-panel" class="panel" style="border-color: blue;">
+            <h4 style="color:blue; margin:0">📜 REGISTROS</h4>
+            <div id="list-users"></div>
+        </div>
+
+        <button class="btn" style="background:#666; width:100%; margin-top:20px;" onclick="location.reload()">Sair</button>
+    </div>
+</div>
+
+<script>
+    let logado = "";
+    function getDB() { return JSON.parse(localStorage.getItem('yt_v14_db')) || { banidos: {}, usuarios: {}, cargos: {"DONO":{color:"#ff0000"}}, user_roles: {}, pedidos: [] }; }
+    function saveDB(data) { localStorage.setItem('yt_v14_db', JSON.stringify(data)); }
+
+    function entrar() {
+        const u = document.getElementById('u-name').value.trim();
+        const p = document.getElementById('u-pass').value.trim();
+        if(!u) return;
+
+        let db = getDB();
+        if(db.banidos[u]) {
+            document.getElementById('main-ui').style.display = 'none';
+            document.getElementById('error-screen').style.display = 'flex';
+            document.getElementById('view-motivo').innerText = db.banidos[u];
+            return;
+        }
+
+        logado = u;
+        db.usuarios[u] = true;
+        saveDB(db);
+
+        document.getElementById('login-box').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+
+        if(u === "admin" && p === "123") document.getElementById('master-panel').style.display = 'block';
+        if(u === "adminlogs" && p === "222") document.getElementById('logs-panel').style.display = 'block';
+
+        setInterval(atualizarUI, 3000);
+        atualizarUI();
+    }
+
+    function banir() {
+        let db = getDB();
+        const user = document.getElementById('ban-user').value.trim();
+        const mot = document.getElementById('ban-reason').value || "Violação";
+        if(user && user !== "admin") {
+            db.banidos[user] = mot;
+            saveDB(db);
+            atualizarUI();
+        }
+    }
+
+    function enviarPedido() {
+        let db = getDB();
+        const uBan = document.getElementById('u-name').value;
+        const motivo = document.getElementById('rev-motivo').value;
+        const texto = document.getElementById('rev-msg').value;
+        
+        db.pedidos.push({ user: uBan, motivo: motivo, texto: texto });
+        saveDB(db);
+        alert("Pedido enviado! Aguarde a revisão do Admin.");
+        location.reload();
+    }
+
+    function processarPedido(index, aceito) {
+        let db = getDB();
+        const user = db.pedidos[index].user;
+        if(aceito) {
+            delete db.banidos[user];
+        }
+        db.pedidos.splice(index, 1);
+        saveDB(db);
+        atualizarUI();
+    }
+
+    function mostrarBan() {
+        document.getElementById('error-screen').style.display = 'none';
+        document.getElementById('ban-screen').style.display = 'flex';
+    }
+
+    function atualizarUI() {
+        let db = getDB();
+        if(db.banidos[logado]) { location.reload(); }
+
+        let cargo = db.user_roles[logado];
+        let tag = cargo ? `<span class="badge" style="background:${db.cargos[cargo].color}">${cargo}</span>` : "";
+        document.getElementById('user-tag').innerHTML = "Sistema Online | User: " + logado + " " + tag;
+
+        // Lista de Banidos
+        document.getElementById('banned-list').innerHTML = Object.keys(db.banidos).map(n => `
+            <div class="card"><span>🚫 ${n}</span></div>`).join('') || "Limpo.";
+
+        // Lista de Pedidos de Desban
+        document.getElementById('list-pedidos').innerHTML = db.pedidos.map((p, i) => `
+            <div class="req-card">
+                <b>Usuário:</b> ${p.user} <br>
+                <b>Justificativa:</b> ${p.motivo} <br>
+                <i>"${p.texto}"</i> <br>
+                <button class="btn" style="background:green; padding:5px" onclick="processarPedido(${i}, true)">ACEITAR</button>
+                <button class="btn" style="background:red; padding:5px" onclick="processarPedido(${i}, false)">RECUSAR</button>
+            </div>
+        `).join('') || "Sem pedidos pendentes.";
+
+        // Logs
+        document.getElementById('list-users').innerHTML = Object.keys(db.usuarios).map(u => `
+            <div class="card"><span>👤 ${u}</span></div>`).join('');
+    }
+</script>
+</body>
+</html>
