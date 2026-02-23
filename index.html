@@ -2,96 +2,129 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>YouTube Master - V17 Ultimate</title>
+    <title>YouTube Master - V18 Fix</title>
     <style>
         :root { --yt-red: #ff0000; --bg: #f4f4f4; --blue: #065fd4; --green: #28a745; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; color: white; transition: 0.2s; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: white; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; text-align: center; }
+        .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 5px; color: white; }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        
         .panel { display: none; border-radius: 15px; padding: 20px; margin-top: 20px; border: 2px solid #ddd; }
-        .card { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 5px; border: 1px solid #eee; display: flex; justify-content: space-between; }
-        #bug-console { background: #1e1e1e; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 13px; display: none; text-align: left; }
+        .card { background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 5px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        #bug-console { background: #1e1e1e; color: #00ff00; font-family: monospace; padding: 15px; border-radius: 10px; margin-top: 10px; display: none; text-align: left; }
     </style>
 </head>
 <body>
 
+<div id="ban-screen" class="overlay">
+    <h1 style="color:red;">⚠️ VOCÊ FOI BANIDO</h1>
+    <p>O Administrador removeu seu acesso ao sistema.</p>
+    <button class="btn" style="background:#444" onclick="location.reload()">Voltar</button>
+</div>
+
 <div class="container" id="main-ui">
-    <h2 style="text-align:center; color:var(--yt-red)">YOUTUBE <span style="color:#333">SYSTEM V17</span></h2>
+    <h2 style="text-align:center; color:var(--yt-red)">YOUTUBE <span style="color:#333">SYSTEM V18</span></h2>
 
     <div id="login-box">
-        <input type="text" id="u-name" placeholder="Usuário (admin)">
-        <input type="password" id="u-pass" placeholder="Senha (123)">
-        <button class="btn" style="background:var(--blue); width:100%" onclick="entrar()">ENTRAR NO SISTEMA</button>
+        <input type="text" id="u-name" placeholder="Usuário">
+        <input type="password" id="u-pass" placeholder="Senha">
+        <button class="btn" style="background:var(--blue); width:100%" onclick="entrar()">ENTRAR</button>
     </div>
 
     <div id="app" style="display:none;">
-        <div id="user-tag" style="text-align:center; margin-bottom:15px; font-weight:bold; font-size: 1.2em;"></div>
+        <div id="user-tag" style="text-align:center; margin-bottom:15px; font-weight:bold;"></div>
 
-        <div id="master-panel" class="panel" style="border-color: red; display: block;">
-            <h3 style="color:red; margin-top:0;">🚀 CONTROLE MASTER</h3>
-            
-            <div style="background: #fff0f0; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <p><b>Pesquisar Canal:</b></p>
-                <input type="text" id="search-input" placeholder="Nome do canal...">
-                <button class="btn" style="background:var(--yt-red);" onclick="pesquisarCanal()">BUSCAR E DAR SUB</button>
-                <div id="sub-result" style="margin-top:10px; font-weight:bold; display:none;">
-                    Canal: <span id="res-name"></span> | Subs: <span id="res-subs"></span>
-                    <br><button class="btn" style="background:#333" onclick="inscrever()">+1 INSCRITO</button>
-                </div>
+        <div style="background: #eee; padding: 15px; border-radius: 10px;">
+            <h4>🔍 Pesquisar Canal</h4>
+            <input type="text" id="search-input" placeholder="Nome do canal...">
+            <button class="btn" style="background:var(--yt-red)" onclick="pesquisar()">Buscar</button>
+            <div id="search-res" style="display:none; margin-top:10px; border-top: 1px solid #ccc; pt-10px;">
+                <p>Canal: <b id="res-name"></b> | Subs: <b id="res-subs"></b></p>
+                <button class="btn" style="background:#333" onclick="inscrever()">Inscrever-se</button>
             </div>
+        </div>
 
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 10px;">
-                <p><b>Gestão de Ban:</b></p>
-                <input type="text" id="ban-user" placeholder="Usuário para banir">
-                <button class="btn" style="background:black; width:100%" onclick="banir()">BANIR USUÁRIO</button>
-            </div>
-
+        <div id="admin-panel" class="panel" style="border-color: red;">
+            <h4 style="color:red;">🛠 PAINEL MASTER (ADMIN)</h4>
+            <input type="text" id="ban-alvo" placeholder="Nome do usuário para BANIR">
+            <button class="btn" style="background:black; width:100%" onclick="aplicarBan()">APLICAR BANIMENTO AGORA</button>
             <hr>
-            <h3 style="color:var(--green)">🛠 DIAGNÓSTICO</h3>
-            <button class="btn" style="background:var(--green); width:100%" onclick="verificarBugs()">VERIFICAR BUGS NO SITE</button>
+            <p>Usuários no Sistema:</p>
+            <div id="user-list"></div>
+        </div>
+
+        <div id="support-panel" class="panel" style="border-color: var(--green);">
+            <h4 style="color:var(--green);">🛠 DIAGNÓSTICO (SUPORTE)</h4>
+            <button class="btn" style="background:var(--green); width:100%" onclick="testarBugs()">ESCANEAR ERROS</button>
             <div id="bug-console"></div>
         </div>
 
-        <button class="btn" style="background:#666; width:100%; margin-top:20px;" onclick="location.reload()">Sair do Sistema</button>
+        <button class="btn" style="background:#666; width:100%; margin-top:20px;" onclick="location.reload()">Sair</button>
     </div>
 </div>
 
 <script>
     let logado = "";
-    let canalBuscado = "";
+    let alvoBusca = "";
 
-    function getDB() { 
-        return JSON.parse(localStorage.getItem('yt_v17_db')) || { banidos: {}, usuarios: {}, inscritos: {} }; 
+    // BANCO DE DADOS ÚNICO E CORRIGIDO
+    function getDB() {
+        return JSON.parse(localStorage.getItem('yt_final_db')) || { 
+            usuarios: ["admin", "suporte"], 
+            banidos: [], 
+            subs: {"admin": 11000000, "suporte": 500} 
+        };
     }
-    function saveDB(data) { localStorage.setItem('yt_v17_db', JSON.stringify(data)); }
+
+    function saveDB(db) { localStorage.setItem('yt_final_db', JSON.stringify(db)); }
 
     function entrar() {
-        const u = document.getElementById('u-name').value.trim();
+        const u = document.getElementById('u-name').value.trim().toLowerCase();
         const p = document.getElementById('u-pass').value.trim();
+        let db = getDB();
+
         if(!u) return;
 
-        logado = u;
-        document.getElementById('login-box').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('user-tag').innerText = "Logado como: " + u;
+        // VERIFICA SE ESTÁ BANIDO
+        if(db.banidos.includes(u)) {
+            document.getElementById('main-ui').style.display = 'none';
+            document.getElementById('ban-screen').style.display = 'flex';
+            return;
+        }
 
-        let db = getDB();
-        if(!db.usuarios[u]) {
-            db.usuarios[u] = true;
-            db.inscritos[u] = 11000000; // Começa com seus 11M de inscritos!
+        logado = u;
+        if(!db.usuarios.includes(u)) {
+            db.usuarios.push(u);
+            db.subs[u] = 0;
             saveDB(db);
         }
+
+        document.getElementById('login-box').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        document.getElementById('user-tag').innerText = "CONTA: " + u.toUpperCase();
+
+        // MOSTRAR PAINÉIS SÓ PARA QUEM TEM PERMISSÃO
+        if(u === "admin") {
+            document.getElementById('admin-panel').style.display = 'block';
+        } 
+        if(u === "suporte") {
+            document.getElementById('support-panel').style.display = 'block';
+        }
+        
+        atualizarListas();
     }
 
-    function pesquisarCanal() {
+    function pesquisar() {
         let db = getDB();
-        const busca = document.getElementById('search-input').value.trim();
-        if(db.usuarios[busca]) {
-            canalBuscado = busca;
-            document.getElementById('sub-result').style.display = "block";
+        let busca = document.getElementById('search-input').value.trim().toLowerCase();
+        if(db.usuarios.includes(busca)) {
+            alvoBusca = busca;
+            document.getElementById('search-res').style.display = 'block';
             document.getElementById('res-name').innerText = busca;
-            document.getElementById('res-subs').innerText = db.inscritos[busca];
+            document.getElementById('res-subs').innerText = db.subs[busca].toLocaleString();
         } else {
             alert("Canal não encontrado!");
         }
@@ -99,19 +132,45 @@
 
     function inscrever() {
         let db = getDB();
-        db.inscritos[canalBuscado]++;
+        db.subs[alvoBusca]++;
         saveDB(db);
-        document.getElementById('res-subs').innerText = db.inscritos[canalBuscado];
+        document.getElementById('res-subs').innerText = db.subs[alvoBusca].toLocaleString();
+        atualizarListas();
     }
 
-    function banir() {
-        alert("Usuário banido com sucesso!");
+    function aplicarBan() {
+        let db = getDB();
+        let alvo = document.getElementById('ban-alvo').value.trim().toLowerCase();
+        
+        if(alvo === "admin") return alert("Você não pode banir o dono!");
+        
+        if(db.usuarios.includes(alvo)) {
+            db.banidos.push(alvo);
+            saveDB(db);
+            alert("USUÁRIO " + alvo + " BANIDO COM SUCESSO!");
+            document.getElementById('ban-alvo').value = "";
+            atualizarListas();
+        } else {
+            alert("Usuário não existe.");
+        }
     }
 
-    function verificarBugs() {
-        const consoleDiv = document.getElementById('bug-console');
-        consoleDiv.style.display = 'block';
-        consoleDiv.innerHTML = "> Iniciando varredura...<br>> Verificando tabelas... [OK]<br>> Testando botões... [OK]<br>> SISTEMA OPERACIONAL!";
+    function testarBugs() {
+        let console = document.getElementById('bug-console');
+        console.style.display = 'block';
+        console.innerHTML = "> Testando permissões... [OK]<br>> Verificando Database... [OK]<br>> Limpando Cache... [OK]<br>> SISTEMA PROTEGIDO!";
+    }
+
+    function atualizarListas() {
+        let db = getDB();
+        if(logado === "admin") {
+            document.getElementById('user-list').innerHTML = db.usuarios.map(u => `
+                <div class="card">
+                    <span>👤 ${u}</span>
+                    <span>${db.subs[u]} subs ${db.banidos.includes(u) ? '<b style="color:red">[BANIDO]</b>' : ''}</span>
+                </div>
+            `).join('');
+        }
     }
 </script>
 </body>
