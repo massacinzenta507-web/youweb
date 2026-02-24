@@ -2,79 +2,74 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>YouTube Master - V22 DataSave</title>
+    <title>YouTube Master - V23 Store & Security</title>
     <style>
-        :root { 
-            --yt-red: #ff0000; --bg: #f9f9f9; --text: #0f0f0f; 
-            --card-bg: #ffffff; --border: #e5e5e5; --blue: #065fd4; --verified: #3ea6ff;
-        }
+        :root { --yt-red: #ff0000; --bg: #f9f9f9; --text: #0f0f0f; --card-bg: #ffffff; --border: #e5e5e5; --blue: #065fd4; --verified: #3ea6ff; --gold: #ffd700; }
         .dark-mode { --bg: #0f0f0f; --text: #ffffff; --card-bg: #1e1e1e; --border: #333; }
-
         body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
-        .container { max-width: 900px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; margin: 5px 2px; }
-        .btn-red { background: var(--yt-red); color: white; }
-        .btn-blue { background: var(--blue); color: white; }
-        
-        input { width: 100%; padding: 14px; margin: 10px 0; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; outline: none; }
-        
-        .v-badge { color: var(--verified); font-weight: bold; margin-left: 5px; }
-        .stat-card { background: var(--bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; }
-        
-        .panel { display: none; padding: 20px; border-radius: 18px; margin-top: 20px; border: 2px solid var(--border); }
-        .staff-tag { font-size: 10px; background: #eee; padding: 2px 8px; border-radius: 10px; color: #666; text-transform: uppercase; margin-left: 10px; }
+        .container { max-width: 900px; margin: 20px auto; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin: 3px; color: white; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px; }
+        .stat-card { background: var(--bg); padding: 15px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 10px; }
+        .panel { display: none; padding: 15px; border-radius: 15px; margin-top: 15px; border: 2px solid var(--border); }
+        .v-badge { color: var(--verified); }
+        .points-badge { background: var(--gold); color: black; padding: 5px 10px; border-radius: 10px; font-size: 14px; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h2 style="margin:0;">🔴 YouTube Master <span id="header-badge" class="v-badge" style="display:none;">✔</span></h2>
-        <button class="btn" onclick="document.body.classList.toggle('dark-mode')" style="background:var(--border); color:var(--text);">🌓 Tema</button>
+        <h2>🔴 YouTube Master</h2>
+        <div id="user-points-display" style="display:none;">
+            <span class="points-badge">💰 <span id="p-count">0</span> Pontos</span>
+        </div>
     </header>
 
     <div id="login-box">
-        <h3 style="text-align: center;">Painel de Acesso</h3>
+        <h3 style="text-align:center">Acesso ao Império</h3>
         <input type="text" id="u-name" placeholder="Usuário">
         <input type="password" id="u-pass" placeholder="Senha">
-        <button class="btn btn-red" style="width:100%" onclick="entrar()">ENTRAR</button>
+        <button class="btn" style="background:var(--yt-red); width:100%" onclick="entrar()">LOGAR</button>
     </div>
 
     <div id="app" style="display:none;">
         <div class="stat-card">
-            <h3 id="welcome-msg">Bem-vindo</h3>
-            <p>Seus Inscritos: <b id="my-subs" style="color:var(--yt-red)">0</b></p>
+            <h3 id="welcome-msg"></h3>
+            <p>Inscritos: <b id="my-subs" style="color:var(--yt-red)">0</b></p>
         </div>
 
         <div class="stat-card">
-            <h4>🔍 Pesquisar Canal</h4>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="search-input" placeholder="Nome do canal...">
-                <button class="btn btn-red" onclick="pesquisar()">Buscar</button>
+            <h4>🛒 LOJA DE PRÊMIOS</h4>
+            <div class="shop-item">
+                <span>⭐ Cargo VIP (1 Dia)</span>
+                <button class="btn" style="background:var(--blue)" onclick="comprar('VIP', 500)">500 pts</button>
             </div>
-            <div id="res-box" style="display:none; margin-top:15px; padding:15px; border:1px solid var(--border); border-radius:10px;">
-                <span id="res-name" style="font-size:1.2em; font-weight:bold;"></span>
-                <span id="res-badge" class="v-badge" style="display:none;">✔</span>
-                <p>Inscritos: <b id="res-subs"></b></p>
-                <button class="btn btn-blue" onclick="inscrever()">+1 Inscrito</button>
-                <button id="btn-admin-v" class="btn" style="display:none; background:#00c853; color:white;" onclick="toggleVerificado()">Dar Selo ✔</button>
+            <div class="shop-item">
+                <span>✔ Selo Verificado</span>
+                <button class="btn" style="background:var(--blue)" onclick="comprar('Selo', 2000)">2.000 pts</button>
             </div>
         </div>
 
-        <div id="admin-panel" class="panel" style="border-color: var(--yt-red);">
-            <h4 style="color:var(--yt-red);">🛠 CONTROLE DO DONO</h4>
-            <input type="text" id="ban-alvo" placeholder="Nome do usuário para banir">
-            <button class="btn btn-red" style="width:100%" onclick="banir()">EXPULSAR DO SISTEMA</button>
+        <div class="stat-card">
+            <h4>🔍 Pesquisa</h4>
+            <input type="text" id="search-input" placeholder="Buscar canal...">
+            <button class="btn" style="background:var(--yt-red)" onclick="pesquisar()">Buscar</button>
+            <div id="res-box" style="display:none; margin-top:10px;">
+                <p><b id="res-name"></b> | Subs: <span id="res-subs"></span></p>
+                <button class="btn" style="background:#333" onclick="inscrever()">+1 Sub (+10 Pontos)</button>
+            </div>
         </div>
 
-        <div id="staff-panel" class="panel" style="border-color: var(--blue);">
-            <h4 style="color:var(--blue);">📜 REGISTROS DE STAFF</h4>
-            <div id="logs-list"></div>
+        <div id="admin-panel" class="panel" style="border-color:red">
+            <h4>🛠 PAINEL DONO</h4>
+            <input type="text" id="ban-alvo" placeholder="Usuário para banir">
+            <button class="btn" style="background:black; width:100%" onclick="banir()">BANIR</button>
         </div>
 
-        <button class="btn" style="background:#666; color:white; width:100%; margin-top:10px;" onclick="location.reload()">Desconectar</button>
+        <button class="btn" style="background:#666; width:100%" onclick="location.reload()">Sair</button>
     </div>
 </div>
 
@@ -82,124 +77,107 @@
     let logado = "";
     let alvoBusca = "";
 
-    // BANCO DE DADOS QUE SALVA TUDO (Data Save)
     function getDB() {
-        // O nome do banco agora é fixo para não perder dados entre versões
-        let db = JSON.parse(localStorage.getItem('YOUTUBE_MASTER_DATA'));
+        let db = JSON.parse(localStorage.getItem('YT_V23_DATA'));
         if(!db) {
             db = {
                 usuarios: ["admin", "adminlogs", "suporte"],
-                pass: {"admin": "123", "adminlogs": "logs123", "suporte": "tech123"},
+                pass: {"admin":"123", "adminlogs":"logs123", "suporte":"tech123"},
                 banidos: [],
-                subs: {"admin": 11000000, "adminlogs": 0, "suporte": 0},
+                subs: {"admin": 11000000},
+                pontos: {"admin": 10000},
                 verificados: ["admin"],
-                cargos: {"admin": "Dono", "adminlogs": "Staff", "suporte": "Técnico"}
+                cargos: {"admin":"Dono"}
             };
             saveDB(db);
         }
         return db;
     }
-
-    function saveDB(db) { localStorage.setItem('YOUTUBE_MASTER_DATA', JSON.stringify(db)); }
+    function saveDB(db) { localStorage.setItem('YT_V23_DATA', JSON.stringify(db)); }
 
     function entrar() {
-        const u = document.getElementById('u-name').value.trim().toLowerCase();
-        const p = document.getElementById('u-pass').value.trim();
+        let u = document.getElementById('u-name').value.trim();
+        let p = document.getElementById('u-pass').value.trim();
         let db = getDB();
 
-        if(db.banidos.includes(u)) return alert("❌ ACESSO NEGADO: Você foi banido!");
-        
-        // Verifica se a conta existe e a senha bate
-        if(db.usuarios.includes(u) && db.pass[u] === p) {
-            logado = u;
-        } else if(!db.usuarios.includes(u)) {
-            // Cria conta nova se não existir
+        // SEGURANÇA: ANTI-IMPOSTOR
+        let uLower = u.toLowerCase();
+        let originais = ["admin", "adminlogs", "suporte"];
+        if(originais.includes(uLower) && !originais.includes(u)) {
+            db.banidos.push(u);
+            saveDB(db);
+            return alert("❌ TENTATIVA DE IMPOSTOR DETECTADA: Nome proibido!");
+        }
+
+        if(db.banidos.includes(u)) return alert("Você está banido!");
+
+        if(!db.usuarios.includes(u)) {
             db.usuarios.push(u);
             db.pass[u] = p;
             db.subs[u] = 0;
-            db.cargos[u] = "Usuário";
+            db.pontos[u] = 0;
             saveDB(db);
-            logado = u;
-        } else {
-            return alert("Senha incorreta!");
         }
 
+        logado = u;
         document.getElementById('login-box').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        
-        // Atualiza UI
-        document.getElementById('my-subs').innerText = db.subs[u].toLocaleString();
-        document.getElementById('welcome-msg').innerHTML = `Olá, ${u} <span class="staff-tag">${db.cargos[u]}</span>`;
-        if(db.verificados.includes(u)) {
-            document.getElementById('welcome-msg').innerHTML += ' <span class="v-badge">✔</span>';
-            document.getElementById('header-badge').style.display = 'inline';
-        }
+        document.getElementById('user-points-display').style.display = 'block';
+        atualizarUI();
+        if(u === "admin") document.getElementById('admin-panel').style.display = 'block';
+    }
 
-        // Mostrar painéis por cargo
-        if(db.cargos[u] === "Dono") document.getElementById('admin-panel').style.display = 'block';
-        if(db.cargos[u] === "Staff" || db.cargos[u] === "Dono") {
-            document.getElementById('staff-panel').style.display = 'block';
-            atualizarLogs();
-        }
+    function atualizarUI() {
+        let db = getDB();
+        document.getElementById('p-count').innerText = db.pontos[logado];
+        document.getElementById('my-subs').innerText = db.subs[logado].toLocaleString();
+        document.getElementById('welcome-msg').innerHTML = "Olá, " + logado + (db.verificados.includes(logado) ? ' <span class="v-badge">✔</span>' : '');
     }
 
     function pesquisar() {
         let db = getDB();
-        let busca = document.getElementById('search-input').value.trim().toLowerCase();
+        let busca = document.getElementById('search-input').value.trim();
         if(db.usuarios.includes(busca)) {
             alvoBusca = busca;
             document.getElementById('res-box').style.display = 'block';
             document.getElementById('res-name').innerText = busca;
             document.getElementById('res-subs').innerText = db.subs[busca].toLocaleString();
-            document.getElementById('res-badge').style.display = db.verificados.includes(busca) ? 'inline' : 'none';
-            
-            // Botão de verificado só aparece para o Dono
-            if(db.cargos[logado] === "Dono") document.getElementById('btn-admin-v').style.display = 'inline-block';
-        } else { alert("Canal não encontrado!"); }
-    }
-
-    function toggleVerificado() {
-        let db = getDB();
-        if(db.verificados.includes(alvoBusca)) {
-            db.verificados = db.verificados.filter(v => v !== alvoBusca);
-        } else {
-            db.verificados.push(alvoBusca);
         }
-        saveDB(db);
-        pesquisar();
     }
 
     function inscrever() {
         let db = getDB();
         db.subs[alvoBusca]++;
+        db.pontos[logado] += 10; // Ganha pontos ao ajudar canais
         saveDB(db);
         document.getElementById('res-subs').innerText = db.subs[alvoBusca].toLocaleString();
-        if(logado === alvoBusca) document.getElementById('my-subs').innerText = db.subs[alvoBusca].toLocaleString();
+        atualizarUI();
+    }
+
+    function comprar(item, preco) {
+        let db = getDB();
+        if(db.pontos[logado] >= preco) {
+            db.pontos[logado] -= preco;
+            if(item === 'Selo') db.verificados.push(logado);
+            if(item === 'VIP') db.cargos[logado] = "VIP";
+            saveDB(db);
+            alert("Sucesso! Você adquiriu: " + item);
+            atualizarUI();
+        } else {
+            alert("Pontos insuficientes!");
+        }
     }
 
     function banir() {
         let db = getDB();
-        let alvo = document.getElementById('ban-alvo').value.trim().toLowerCase();
-        if(alvo && db.cargos[alvo] !== "Dono") {
+        let alvo = document.getElementById('ban-alvo').value.trim();
+        if(alvo !== "admin") {
             db.banidos.push(alvo);
             saveDB(db);
-            alert("O usuário " + alvo + " foi banido!");
-            atualizarLogs();
-        } else {
-            alert("Impossível banir este usuário.");
+            alert(alvo + " foi banido!");
         }
-    }
-
-    function atualizarLogs() {
-        let db = getDB();
-        document.getElementById('logs-list').innerHTML = db.usuarios.map(u => `
-            <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                <span>👤 <b>${u}</b> <small>(${db.cargos[u]})</small></span>
-                <span>${db.subs[u]} subs ${db.banidos.includes(u) ? '🔴' : '🟢'}</span>
-            </div>
-        `).join('');
     }
 </script>
 </body>
-    </html>
-    
+            </html>
+            
