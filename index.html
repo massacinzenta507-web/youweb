@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>YouTube Master - V21 Full Control</title>
+    <title>YouTube Master - V22 DataSave</title>
     <style>
         :root { 
             --yt-red: #ff0000; --bg: #f9f9f9; --text: #0f0f0f; 
@@ -11,20 +11,20 @@
         .dark-mode { --bg: #0f0f0f; --text: #ffffff; --card-bg: #1e1e1e; --border: #333; }
 
         body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
-        .container { max-width: 900px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border); }
+        .container { max-width: 900px; margin: 40px auto; background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
         .btn { padding: 10px 20px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; margin: 5px 2px; }
         .btn-red { background: var(--yt-red); color: white; }
         .btn-blue { background: var(--blue); color: white; }
         
-        input { width: 100%; padding: 14px; margin: 10px 0; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; outline: none; }
         
         .v-badge { color: var(--verified); font-weight: bold; margin-left: 5px; }
         .stat-card { background: var(--bg); padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; }
         
         .panel { display: none; padding: 20px; border-radius: 18px; margin-top: 20px; border: 2px solid var(--border); }
-        .log-item { padding: 8px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .staff-tag { font-size: 10px; background: #eee; padding: 2px 8px; border-radius: 10px; color: #666; text-transform: uppercase; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -32,49 +32,49 @@
 <div class="container">
     <header>
         <h2 style="margin:0;">🔴 YouTube Master <span id="header-badge" class="v-badge" style="display:none;">✔</span></h2>
-        <div>
-            <button class="btn" onclick="document.body.classList.toggle('dark-mode')" style="background:var(--border); color:var(--text);">Tema</button>
-            <button class="btn btn-red" onclick="location.reload()">Sair</button>
-        </div>
+        <button class="btn" onclick="document.body.classList.toggle('dark-mode')" style="background:var(--border); color:var(--text);">🌓 Tema</button>
     </header>
 
     <div id="login-box">
+        <h3 style="text-align: center;">Painel de Acesso</h3>
         <input type="text" id="u-name" placeholder="Usuário">
         <input type="password" id="u-pass" placeholder="Senha">
-        <button class="btn btn-red" style="width:100%" onclick="entrar()">Acessar Painel</button>
+        <button class="btn btn-red" style="width:100%" onclick="entrar()">ENTRAR</button>
     </div>
 
     <div id="app" style="display:none;">
-        <div id="welcome-area" class="stat-card">
+        <div class="stat-card">
             <h3 id="welcome-msg">Bem-vindo</h3>
             <p>Seus Inscritos: <b id="my-subs" style="color:var(--yt-red)">0</b></p>
         </div>
 
         <div class="stat-card">
-            <h4>🔍 Gerenciar Canal</h4>
+            <h4>🔍 Pesquisar Canal</h4>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="search-input" placeholder="Pesquisar nome...">
+                <input type="text" id="search-input" placeholder="Nome do canal...">
                 <button class="btn btn-red" onclick="pesquisar()">Buscar</button>
             </div>
             <div id="res-box" style="display:none; margin-top:15px; padding:15px; border:1px solid var(--border); border-radius:10px;">
                 <span id="res-name" style="font-size:1.2em; font-weight:bold;"></span>
                 <span id="res-badge" class="v-badge" style="display:none;">✔</span>
                 <p>Inscritos: <b id="res-subs"></b></p>
-                <button class="btn btn-blue" onclick="inscrever()">+1 Sub</button>
-                <button id="btn-dar-v" class="btn" style="display:none; background:#00c853; color:white;" onclick="toggleVerificado()">Dar/Remover Selo ✔</button>
+                <button class="btn btn-blue" onclick="inscrever()">+1 Inscrito</button>
+                <button id="btn-admin-v" class="btn" style="display:none; background:#00c853; color:white;" onclick="toggleVerificado()">Dar Selo ✔</button>
             </div>
         </div>
 
         <div id="admin-panel" class="panel" style="border-color: var(--yt-red);">
-            <h4 style="color:var(--yt-red);">🛠 CONTROLE MASTER</h4>
-            <input type="text" id="ban-alvo" placeholder="Usuário para banir">
-            <button class="btn btn-red" style="width:100%" onclick="banir()">BANIR AGORA</button>
+            <h4 style="color:var(--yt-red);">🛠 CONTROLE DO DONO</h4>
+            <input type="text" id="ban-alvo" placeholder="Nome do usuário para banir">
+            <button class="btn btn-red" style="width:100%" onclick="banir()">EXPULSAR DO SISTEMA</button>
         </div>
 
-        <div id="logs-panel" class="panel" style="border-color: var(--blue);">
-            <h4 style="color:var(--blue);">📜 REGISTROS DO SISTEMA</h4>
+        <div id="staff-panel" class="panel" style="border-color: var(--blue);">
+            <h4 style="color:var(--blue);">📜 REGISTROS DE STAFF</h4>
             <div id="logs-list"></div>
         </div>
+
+        <button class="btn" style="background:#666; color:white; width:100%; margin-top:10px;" onclick="location.reload()">Desconectar</button>
     </div>
 </div>
 
@@ -82,40 +82,63 @@
     let logado = "";
     let alvoBusca = "";
 
+    // BANCO DE DADOS QUE SALVA TUDO (Data Save)
     function getDB() {
-        return JSON.parse(localStorage.getItem('yt_v21_db')) || { 
-            usuarios: ["admin", "adminlogs", "suporte"], 
-            banidos: [], 
-            subs: {"admin": 11000000, "adminlogs": 0, "suporte": 100},
-            verificados: ["admin"] 
-        };
+        // O nome do banco agora é fixo para não perder dados entre versões
+        let db = JSON.parse(localStorage.getItem('YOUTUBE_MASTER_DATA'));
+        if(!db) {
+            db = {
+                usuarios: ["admin", "adminlogs", "suporte"],
+                pass: {"admin": "123", "adminlogs": "logs123", "suporte": "tech123"},
+                banidos: [],
+                subs: {"admin": 11000000, "adminlogs": 0, "suporte": 0},
+                verificados: ["admin"],
+                cargos: {"admin": "Dono", "adminlogs": "Staff", "suporte": "Técnico"}
+            };
+            saveDB(db);
+        }
+        return db;
     }
-    function saveDB(db) { localStorage.setItem('yt_v21_db', JSON.stringify(db)); }
+
+    function saveDB(db) { localStorage.setItem('YOUTUBE_MASTER_DATA', JSON.stringify(db)); }
 
     function entrar() {
         const u = document.getElementById('u-name').value.trim().toLowerCase();
         const p = document.getElementById('u-pass').value.trim();
         let db = getDB();
 
-        if(db.banidos.includes(u)) return alert("Conta Banida!");
-
-        logado = u;
-        if(!db.usuarios.includes(u)) {
+        if(db.banidos.includes(u)) return alert("❌ ACESSO NEGADO: Você foi banido!");
+        
+        // Verifica se a conta existe e a senha bate
+        if(db.usuarios.includes(u) && db.pass[u] === p) {
+            logado = u;
+        } else if(!db.usuarios.includes(u)) {
+            // Cria conta nova se não existir
             db.usuarios.push(u);
+            db.pass[u] = p;
             db.subs[u] = 0;
+            db.cargos[u] = "Usuário";
             saveDB(db);
+            logado = u;
+        } else {
+            return alert("Senha incorreta!");
         }
 
         document.getElementById('login-box').style.display = 'none';
         document.getElementById('app').style.display = 'block';
+        
+        // Atualiza UI
         document.getElementById('my-subs').innerText = db.subs[u].toLocaleString();
-        document.getElementById('welcome-msg').innerHTML = "Olá, " + u + (db.verificados.includes(u) ? ' <span class="v-badge">✔</span>' : '');
-        if(db.verificados.includes(u)) document.getElementById('header-badge').style.display = 'inline';
+        document.getElementById('welcome-msg').innerHTML = `Olá, ${u} <span class="staff-tag">${db.cargos[u]}</span>`;
+        if(db.verificados.includes(u)) {
+            document.getElementById('welcome-msg').innerHTML += ' <span class="v-badge">✔</span>';
+            document.getElementById('header-badge').style.display = 'inline';
+        }
 
-        // Lógica de Painéis
-        if(u === "admin" && p === "123") document.getElementById('admin-panel').style.display = 'block';
-        if(u === "adminlogs") {
-            document.getElementById('logs-panel').style.display = 'block';
+        // Mostrar painéis por cargo
+        if(db.cargos[u] === "Dono") document.getElementById('admin-panel').style.display = 'block';
+        if(db.cargos[u] === "Staff" || db.cargos[u] === "Dono") {
+            document.getElementById('staff-panel').style.display = 'block';
             atualizarLogs();
         }
     }
@@ -130,8 +153,8 @@
             document.getElementById('res-subs').innerText = db.subs[busca].toLocaleString();
             document.getElementById('res-badge').style.display = db.verificados.includes(busca) ? 'inline' : 'none';
             
-            // Se for admin, mostra o botão de dar selo
-            if(logado === "admin") document.getElementById('btn-dar-v').style.display = 'inline-block';
+            // Botão de verificado só aparece para o Dono
+            if(db.cargos[logado] === "Dono") document.getElementById('btn-admin-v').style.display = 'inline-block';
         } else { alert("Canal não encontrado!"); }
     }
 
@@ -143,7 +166,7 @@
             db.verificados.push(alvoBusca);
         }
         saveDB(db);
-        pesquisar(); // Atualiza a tela
+        pesquisar();
     }
 
     function inscrever() {
@@ -151,27 +174,32 @@
         db.subs[alvoBusca]++;
         saveDB(db);
         document.getElementById('res-subs').innerText = db.subs[alvoBusca].toLocaleString();
+        if(logado === alvoBusca) document.getElementById('my-subs').innerText = db.subs[alvoBusca].toLocaleString();
     }
 
     function banir() {
         let db = getDB();
         let alvo = document.getElementById('ban-alvo').value.trim().toLowerCase();
-        if(alvo && alvo !== "admin") {
+        if(alvo && db.cargos[alvo] !== "Dono") {
             db.banidos.push(alvo);
             saveDB(db);
-            alert(alvo + " banido!");
-            if(logado === "adminlogs") atualizarLogs();
+            alert("O usuário " + alvo + " foi banido!");
+            atualizarLogs();
+        } else {
+            alert("Impossível banir este usuário.");
         }
     }
 
     function atualizarLogs() {
         let db = getDB();
         document.getElementById('logs-list').innerHTML = db.usuarios.map(u => `
-            <div class="log-item">
-                👤 <b>${u}</b> | Subs: ${db.subs[u]} | ${db.banidos.includes(u) ? '<span style="color:red">BANIDO</span>' : '<span style="color:green">ATIVO</span>'}
+            <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                <span>👤 <b>${u}</b> <small>(${db.cargos[u]})</small></span>
+                <span>${db.subs[u]} subs ${db.banidos.includes(u) ? '🔴' : '🟢'}</span>
             </div>
         `).join('');
     }
 </script>
 </body>
-</html>
+    </html>
+    
